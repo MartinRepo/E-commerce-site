@@ -23,7 +23,9 @@ export const ProductList = (props: ContentAreaProps) => {
 							<p> £{item.price.toFixed(2)} ({item.rating}/5)</p>
 						</div>
 						<img src={"./src/Assets/Product_Images/" + item.image_link}></img>
-						<button value={item.id}>Add to basket</button>
+						<button disabled={item.quantity === 0} value={item.id}>
+							{item.quantity === 0 ? "Out of stock" : "Add to basket"}
+						</button>
 					</div>
 				)
 			})}

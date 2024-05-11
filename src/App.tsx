@@ -5,7 +5,7 @@ import './e-commerce-stylesheet.css'
 
 type Product = {
   id: number
-	name: string
+  name: string
   price: number
   category: string
   quantity: number
@@ -17,9 +17,12 @@ function App() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [searchedProducts, setSearchedProducts] = useState<Product[]>(itemList);
   const [inStockOnly, setInStockOnly] = useState<boolean>(false);
+  const [sortBy, setSortBy] = useState<string>('AtoZ');
 
   // ===== Hooks =====
-  useEffect(() => updateSearchedProducts(), [searchTerm, inStockOnly]);
+  useEffect(() => {
+    updateSearchedProducts();
+  }, [searchTerm, inStockOnly, sortBy]);
 
   // ===== Basket management =====
   function showBasket(){
@@ -41,14 +44,7 @@ function App() {
     let filteredItems = itemList.filter((product: Product) => {
       return product.name.toLowerCase().includes(searchTerm.toLowerCase()) && (!inStockOnly || product.quantity > 0);
     });
-    setSearchedProducts(filteredItems);
-  }
-
-  // ===== Sort =====
-  function sortItems(sortBy: string) {
-    const sortedProducts = [...searchedProducts];
-  
-    sortedProducts.sort((a, b) => {
+    const sortedFilteredItems = filteredItems.sort((a, b) => {
       switch (sortBy) {
         case "AtoZ":
           return a.name.localeCompare(b.name);
@@ -66,10 +62,14 @@ function App() {
           return 0;
       }
     });
-  
-    setSearchedProducts(sortedProducts);
+    setSearchedProducts(sortedFilteredItems);
+  }
+
+  // ===== Sort =====
+  function sortItems(sortBy: string) {
+    setSortBy(sortBy);
+    updateSearchedProducts();
   }  
- 
 
   return (
     <div id="container"> 
@@ -102,7 +102,11 @@ function App() {
           <label htmlFor="inStock">In stock</label>
         </div>
       </div>
-      <p id="results-indicator">{searchedProducts.length} products available</p>
+      {
+        searchedProducts.length > 0 ? <p id="results-indicator">{searchedProducts.length} products</p>
+        :
+        <p id="results-indicator">No search results</p>
+      }
       <ProductList itemList={searchedProducts}/>
     </div>
   )
